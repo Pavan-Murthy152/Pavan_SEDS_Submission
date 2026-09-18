@@ -1,4 +1,4 @@
-# Week 1: Rigid Balls, Round Walls
+# Week 1: Rigid Balls, Round Walls. ANSWER TO THE QUESTIONS AT THE END.
 
 Gravity integration and collision detection for rigid balls bouncing inside a
 circular boundary.
@@ -130,3 +130,11 @@ twice, and how to avoid checking a ball against itself.
 
 Submission details will be announced separately, so don't worry about that part
 for now.
+
+Answer 1:
+  A fast enough ball can end up outside the arena without a bounce being detected as the it covers a large distance in each time step, so at one instant in can be inside the arena and the next, outside. This doesn't trigger the collision condition hence it goes by undetected.
+  delta-t is responsible for this "phenomenon"
+
+Answer 2:
+  For me, it creeps downwards and eventually all the balls just form a group at the bottom even when e = 1.
+  This happens due to the accumulation of errors while the simulation runs. Though it mimicks a loss (or sometimes a gain) of energy, theoretically and practically that never happens. Errors accumulate due to a larger time step.
