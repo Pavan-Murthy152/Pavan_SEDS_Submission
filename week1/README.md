@@ -138,3 +138,11 @@ Answer 1:
 Answer 2:
   For me, it creeps downwards and eventually all the balls just form a group at the bottom even when e = 1.
   This happens due to the accumulation of errors while the simulation runs. Though it mimicks a loss (or sometimes a gain) of energy, theoretically and practically that never happens. Errors accumulate due to a larger time step.
+
+My Brief:
+I am pretty happy with my result. The code can be a little more optimized I think, but it runs smoothly upto 100 balls (best maximum).
+Understanding the logic and putting it down in code was a great experience. It brought back some JEE grind memories of taking dot product with the normal vector.
+It took me some time to understand what np.linalg and how the notation for the dot product works, and why we write another *n after flipping a vector and stuff.
+I've also learnt the effects of the errors that take plae during each frame of the simulation and how it can change the output as time progresses. In this sim, it causes the balls to eventually creep down and settle at the bottom even with restitution=1.
+I also played around with the restitution value, making it >1 and SLIGHTLY <1....It was fun to see the motion of the balls with time.
+Overall? I really enjoyed and learnt a lot. Physics is my thing, and trying to simulate it just makes me that much more interested and happy.
