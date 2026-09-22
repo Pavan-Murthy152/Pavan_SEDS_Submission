@@ -31,6 +31,10 @@ class Material(IntEnum):
     EMPTY = 0
     SAND = 1
     WATER = 2
+    FIRE = 3
+    SMOKE = 4
+    WOOD = 5
+    ROCK = 6
 
     # BONUS: add more materials here, e.g.
     # WALL = 3   (immovable — never update it)
@@ -43,6 +47,10 @@ PALETTE = {
     Material.EMPTY: (0, 0, 0),
     Material.SAND: (194, 178, 128),
     Material.WATER: (52, 120, 235),
+    Material.FIRE: (227, 74, 39),
+    Material.SMOKE: (128, 128, 128),
+    Material.WOOD: (139, 69, 19),
+    Material.ROCK: (128, 128, 128)
 }
 # Turned into a NumPy array so that looking up a cell's colour is a single
 # fast indexing operation: COLORS[grid] gives the RGB value of every cell.
@@ -160,6 +168,7 @@ class SandSim:
                         if not moved:
                             grid_copy[row, col] = Material.SAND
                     grid_copy, self._types = self._types, grid_copy
+                    
                 elif cell == Material.WATER:
                     # Check below
                     if row + 1 < self.height and grid_copy[row + 1, col] == Material.EMPTY:
@@ -192,8 +201,81 @@ class SandSim:
                             if not moved:
                                 grid_copy[row, col] = Material.WATER
                     grid_copy, self._types = self._types, grid_copy
-        #raise NotImplementedError("implement the physics, then delete this line")
+                            
+                elif cell == Material.ROCK:
+                    grid_copy[row, col] = Material.ROCK
+                    grid_copy, self._types = self._types, grid_copy
 
+                elif cell == Material.FIRE:
+                    if row - 1 >= 0 and grid_copy[row - 1, col] == Material.EMPTY:
+                        grid_copy[row, col] = Material.EMPTY
+                        grid_copy[row - 1, col] = Material.FIRE
+                    else:
+                        directions = [-1, 1]
+                        _rng.shuffle(directions)
+                        moved = False
+                        for d in directions:
+                            new_col = col + d
+                            if (0 <= new_col < self.width and row - 1 >= 0 and 
+                                grid_copy[row - 1, new_col] == Material.EMPTY):
+                                grid_copy[row, col] = Material.EMPTY
+                                grid_copy[row - 1, new_col] = Material.FIRE
+                                moved = True
+                                break
+                        if not moved:
+                            grid_copy[row, col] = Material.FIRE
+                    grid_copy, self._types = self._types, grid_copy    
+                elif cell == Material.SMOKE:
+                    if row - 1 >= 0 and grid_copy[row - 1, col] == Material.EMPTY:
+                        grid_copy[row, col] = Material.EMPTY
+                        grid_copy[row - 1, col] = Material.SMOKE
+                    else:
+                        directions = [-1, 1]
+                        _rng.shuffle(directions)
+                        moved = False
+                        for d in directions:
+                            new_col = col + d
+                            if (0 <= new_col < self.width and row - 1 >= 0 and 
+                                grid_copy[row - 1, new_col] == Material.EMPTY):
+                                grid_copy[row, col] = Material.EMPTY
+                                grid_copy[row - 1, new_col] = Material.SMOKE
+                                moved = True
+                                break
+                        if not moved:
+                            grid_copy[row, col] = Material.SMOKE
+                    grid_copy, self._types = self._types, grid_copy
+
+                elif cell == Material.WOOD:
+                    # Mimic sand behavior
+                    if row + 1 < self.height and grid_copy[row + 1, col] == Material.EMPTY:
+                        grid_copy[row, col] = Material.EMPTY
+                        grid_copy[row + 1, col] = Material.WOOD
+                    else:
+                        directions = [-1, 1]
+                        _rng.shuffle(directions)
+                        moved = False
+                        for d in directions:
+                            new_col = col + d
+                            if (0 <= new_col < self.width and row + 1 < self.height and 
+                                grid_copy[row + 1, new_col] == Material.EMPTY):
+                                grid_copy[row, col] = Material.EMPTY
+                                grid_copy[row + 1, new_col] = Material.WOOD
+                                moved = True
+                                break
+                        if not moved:
+                            # Check for fire contact
+                            if ((row - 1 >= 0 and grid_copy[row - 1, col] == Material.FIRE) or
+                                (row + 1 < self.height and grid_copy[row + 1, col] == Material.FIRE) or
+                                (col - 1 >= 0 and grid_copy[row, col - 1] == Material.FIRE) or
+                                (col + 1 < self.width and grid_copy[row, col + 1] == Material.FIRE)):
+                                grid_copy[row, col] = Material.SMOKE
+                            else:
+                                grid_copy[row, col] = Material.WOOD
+                    grid_copy, self._types = self._types, grid_copy
+
+                if row in range(0,2) and grid_copy[row, col]== Material.FIRE or grid_copy[row, col]== Material.SMOKE:
+                    grid_copy[row, col] = Material.EMPTY
+                    grid_copy, self._types = self._types, grid_copy
     # ------------------------------------------------------------------ #
     # Rendering (boilerplate — nothing to do here)
     # ------------------------------------------------------------------ #
@@ -236,6 +318,14 @@ def main() -> None:
                     sim.brush = Material.SAND
                 elif k == pygame.K_2:
                     sim.brush = Material.WATER
+                elif k == pygame.K_3:
+                    sim.brush = Material.FIRE
+                elif k == pygame.K_4:
+                    sim.brush = Material.SMOKE
+                elif k == pygame.K_5:
+                    sim.brush = Material.WOOD
+                elif k == pygame.K_6:
+                    sim.brush = Material.ROCK
                 elif k in (pygame.K_0, pygame.K_e):
                     sim.brush = Material.EMPTY
                 elif k == pygame.K_LEFTBRACKET:
@@ -254,7 +344,7 @@ def main() -> None:
             sim.paint_at(mx // sim.cell_size, my // sim.cell_size)
         for _ in range(UPDATES_PER_FRAME):
             sim.update()
-        screen.blit(sim.surface(), (0, 0))
+            screen.blit(sim.surface(), (0, 0))
 
         
 
