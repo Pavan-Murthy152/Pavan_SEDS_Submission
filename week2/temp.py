@@ -272,7 +272,7 @@ class SandSim:
                             else:
                                 grid_copy[row, col] = Material.WOOD
                     grid_copy, self._types = self._types, grid_copy
-
+                    
                 if row in range(0,5) and grid_copy[row, col]== Material.FIRE or grid_copy[row, col]== Material.SMOKE:
                     grid_copy[row, col] = Material.EMPTY
                     grid_copy, self._types = self._types, grid_copy
